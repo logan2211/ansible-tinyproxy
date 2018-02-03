@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+{% set _ = tinyproxy_config.update(tinyproxy_config_overrides) %}
+{% for i in tinyproxy_config | dictsort %}
+{%   set key = i.0 %}
+{%   set item = i.1 %}
+{%   if item is iterable and item is not string %}
+{#     The key is a list so we output multiple config items with the same key #}
+{%     for inner_item in item %}
+{{ key }} {{ inner_item }}
+{%     endfor %}
+{%   else %}
+{{ key }}{% if item != '' %} {{ item }}{% endif %}
+
+{%   endif %}
+{% endfor %}
