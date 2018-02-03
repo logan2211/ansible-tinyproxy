@@ -1,0 +1,60 @@
+language: python
+# Test this later.
+cache:
+  timeout: 3600
+  pip: true
+  directories:
+    - $HOME/.docker
+# cache: pip
+services:
+  - docker
+env:
+  global:
+    - ANSIBLE_FORCE_COLOR=1
+    - docker_image=quay.io/loganv/docker-ci
+    - docker_command=/lib/systemd/systemd
+    - cache_dir=$HOME/.docker
+  matrix:
+    - TOXENV=linters
+      CACHE_NAME=linters
+    - >
+      TOXENV=functional_2.1
+      docker_image_tag=ubuntu-xenial
+      CACHE_NAME=xenial
+    - >
+      TOXENV=functional_2.1
+      docker_image_tag=centos-7
+      CACHE_NAME=cent7
+    - >
+      TOXENV=functional_2.2
+      docker_image_tag=ubuntu-xenial
+      CACHE_NAME=xenial
+    - >
+      TOXENV=functional_2.2
+      docker_image_tag=centos-7
+      CACHE_NAME=cent7
+    - >
+      TOXENV=functional_stable
+      docker_image_tag=ubuntu-xenial
+      CACHE_NAME=xenial
+    - >
+      TOXENV=functional_stable
+      docker_image_tag=centos-7
+      CACHE_NAME=cent7
+before_install:
+  # Load cached docker images
+  - if [[ -d ${cache_dir} ]]; then ls ${cache_dir}/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
+  - if [[ -n ${docker_image_tag} ]]; then docker pull ${docker_image}:${docker_image_tag}; fi
+install:
+  - pip install tox
+script:
+  - tox
+before_cache:
+  # Save tagged docker images
+  - >
+    mkdir -p ${cache_dir} && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
+    | xargs -n 2 -t sh -c 'test -e ${cache_dir}/$1.tar.gz || docker save $0 | gzip -2 > ${cache_dir}/$1.tar.gz'
+notifications:
+  email: false
+  slack:
+    secure: fii0i0jBNBgtiZK40W1aSFgrjiF/zCWNOSgrcKZEbdU35MrnyUu0vLRScbIW42QnWtw5C35wqSUwzQMqMlfbPu9EP3KXAL5/r2SEh5zl+naEUlq4+tpJYVvRd8OYLbdDwxznSgY00TI0RgAVQ55HgWGDNt87OmsRRm1t20FaJt+lfShoOuU+xphnbpvRCslcUtAuFNc5lMC92ne6IN4V0uqtCrOUOlHAPcNgIDJ0gLh80V/C6SuvRhYKRLSac3fIN+ZyI4IE8LdoC9xt00HTFTYtZsjH67LGEQbp3lZHro1MyljpU3PcnSVIuYiaPlwLKSvSfzewWo5RmZCU7Cg9dir86p53TF7CHHPvtKUrIY950/L48rojf2c1dFbkVhFjH2Fw/6HUoby2NnvxWmOtFHYBJw3ITeSM7P3c883yjE6zib1oSt4QZzPOojLYf0CaLVFTXrOv26TP4zaCvPPLmSMfF34MrQmomdMNUdz1uxsXVWDbibVDxSgOBzsd37I+GGUZg0XZb1C1gj1jhnO0PFzTPgeG1Sl5w5rBqsbWkHi4PR+eW/eq5zeIZg5LR9aJ4I50g76CKpfqdi7ePuQkgFQromWo40n3nOsVCpyxTn/+ByQnq5qebTR7lwwJVQqRFqxMl4VV7lvVGN9qHb+3mHzVIU2dklfCGwPrRCEjpQc=
