@@ -14,6 +14,11 @@ _ubuntu_xenial_build: &ubuntu_xenial_build
   CACHE_NAME: xenial
   TOXENV: functional_stable
 
+_ubuntu_bionic_build: &ubuntu_bionic_build
+  docker_image_tag: ubuntu-bionic
+  CACHE_NAME: bionic
+  TOXENV: functional_stable
+
 _centos_build: &centos_build
   docker_image_tag: centos-7
   CACHE_NAME: cent7
@@ -37,11 +42,17 @@ matrix:
         <<: *ubuntu_xenial_build
         TOXENV: functional_2.3
     - env:
+        <<: *ubuntu_bionic_build
+        TOXENV: functional_2.3
+    - env:
         <<: *centos_build
         TOXENV: functional_2.3
     # ANSIBLE 2.4
     - env:
         <<: *ubuntu_xenial_build
+        TOXENV: functional_2.4
+    - env:
+        <<: *ubuntu_bionic_build
         TOXENV: functional_2.4
     - env:
         <<: *centos_build
@@ -51,11 +62,16 @@ matrix:
         <<: *ubuntu_xenial_build
         TOXENV: functional_2.5
     - env:
+        <<: *ubuntu_bionic_build
+        TOXENV: functional_2.5
+    - env:
         <<: *centos_build
         TOXENV: functional_2.5
     # ANSIBLE STABLE
     - env:
         <<: *ubuntu_xenial_build
+    - env:
+        <<: *ubuntu_bionic_build
     - env:
         <<: *centos_build
 
