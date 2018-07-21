@@ -3,7 +3,7 @@ ansible-tinyproxy
 
 An ansible role to install and configure tinyproxy.
 
-[![Build Status](https://travis-ci.org/Logan2211/ansible-tinyproxy.svg?branch=master)](https://travis-ci.org/Logan2211/ansible-tinyproxy)
+[![Build Status](https://travis-ci.org/logan2211/ansible-tinyproxy.svg?branch=master)](https://travis-ci.org/logan2211/ansible-tinyproxy)
 
 Requirements
 ------------
