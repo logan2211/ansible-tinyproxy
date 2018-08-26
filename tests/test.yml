@@ -24,3 +24,12 @@
       command: pgrep -a tinyproxy
       register: tinyproxy_proc
       changed_when: false
+    - name: Install curl
+      package:
+        name: curl
+    - name: Check proxy operation
+      command: >
+        curl -I
+        -x http://localhost:{{ tinyproxy_port }}
+        http://google.com
+      changed_when: false
