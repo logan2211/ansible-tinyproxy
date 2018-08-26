@@ -33,3 +33,13 @@
         -x http://localhost:{{ tinyproxy_port }}
         http://google.com
       changed_when: false
+    - name: Test proxy filters
+      command: >
+        curl -I
+        -x http://localhost:{{ tinyproxy_port }}
+        http://testdomain.test
+        -s -o /dev/null -w "%{http_code}"
+      changed_when: false
+      failed_when:
+        - testfilter.stdout != '403'
+      register: testfilter

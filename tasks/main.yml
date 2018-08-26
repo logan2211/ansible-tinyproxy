@@ -50,11 +50,16 @@
   retries: 5
   delay: 2
 
-- name: Drop tinyproxy configuration
+- name: Drop tinyproxy configurations
   template:
-    src: tinyproxy.conf.j2
-    dest: "{{ tinyproxy_config_file }}"
-    owner: root
-    group: root
-    mode: '0644'
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0644') }}"
+  with_items:
+    - src: tinyproxy.conf.j2
+      dest: "{{ tinyproxy_config_file }}"
+    - src: filters.conf.j2
+      dest: "{{ tinyproxy_filters_path }}"
   notify: Restart tinyproxy

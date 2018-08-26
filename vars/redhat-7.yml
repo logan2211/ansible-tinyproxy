@@ -21,6 +21,7 @@ tinyproxy_distro_packages:
   - tinyproxy
 
 tinyproxy_config_file: /etc/tinyproxy/tinyproxy.conf
+_tinyproxy_filters_path: /etc/tinyproxy/filters.conf
 
 tinyproxy_user: tinyproxy
 tinyproxy_group: tinyproxy

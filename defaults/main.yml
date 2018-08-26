@@ -20,6 +20,10 @@ tinyproxy_package_state: "latest"
 tinyproxy_port: 8888
 tinyproxy_allow: 127.0.0.1
 
+tinyproxy_filters_path: "{{ _tinyproxy_filters_path }}"
+
+tinyproxy_filters: []
+
 ### Configurations are generated using the following override precedence:
 ### For Servers:
 ###   tinyproxy_config -> tinyproxy_config_overrides
@@ -44,6 +48,7 @@ tinyproxy_config:
   ConnectPort:
     - 443
     - 563
+  Filter: "\"{{ tinyproxy_filters_path }}\""
 
 # Configure settings in this dict to override the base configuration.
 # NOTE(logan): An empty list ie. [] is excluded from the config.
