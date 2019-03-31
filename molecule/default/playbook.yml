@@ -1,0 +1,38 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: "{{ playbook_dir | dirname | dirname | basename }}"
+  post_tasks:
+    - name: Check tinyproxy is running
+      command: pgrep -a tinyproxy
+      register: tinyproxy_proc
+      changed_when: false
+    - name: Check proxy operation
+      uri:
+        url: http://google.com
+      environment:
+        http_proxy: "http://localhost:{{ tinyproxy_port }}"
+        HTTP_PROXY: "http://localhost:{{ tinyproxy_port }}"
+      register: proxy_test
+      failed_when:
+        - proxy_test.status != 200 or
+          'tinyproxy' not in proxy_test.via
+    - name: Test proxy filters
+      uri:
+        url: http://testdomain.test
+        status_code:
+          - 403
+      environment:
+        http_proxy: "http://localhost:{{ tinyproxy_port }}"
+        HTTP_PROXY: "http://localhost:{{ tinyproxy_port }}"
+      register: proxy_filter_test
+    - name: Dump proxy responses
+      debug:
+        var: "{{ item }}"
+      with_items:
+        - proxy_test
+        - proxy_filter_test
+  vars:
+    tinyproxy_filters:
+      - testdomain.test
